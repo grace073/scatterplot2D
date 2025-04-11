@@ -1,0 +1,23 @@
+{
+    "visual": {
+        "name": "scatterplot2d",
+        "displayName": "2D Scatter Plot",
+        "guid": "scatterplot2d7A1B2C3D4E5F",
+        "visualClassName": "Visual",
+        "version": "1.0.0.0",
+        "description": "A simple 2D scatterplot visual for PowerBI",
+        "supportUrl": "abc@support.com",
+        "gitHubUrl": "https://github.com/abc/scatterplot2d"
+    },
+    "apiVersion": "5.3.0",
+    "author": {
+        "name": "author",
+        "email": "author@email.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "externalJS": [],
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json"
+}
