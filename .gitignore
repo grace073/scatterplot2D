@@ -3,3 +3,4 @@ dist/
 *.pbiviz
 *.tmp
 .vscode/
+*.csv
