@@ -47,20 +47,35 @@ export class Visual implements IVisual {
         this.plotlyDiv.style.height = '100%';
         this.target.appendChild(this.plotlyDiv);
 
-        // Draw an empty plot immediately to ensure Plotly is working
-        const emptyTrace = {
-            x: [1],
-            y: [1],
-            mode: 'markers',
-            type: 'scatter'
-        };
-        
-        const defaultLayout = {
-            autosize: true,
-            margin: { t: 20, l: 40, r: 20, b: 40 }
+        // Initialize with empty plot to ensure Plotly is working
+        const emptyLayout = {
+            showlegend: false,
+            xaxis: {
+                title: 'X Axis',
+                showgrid: true,
+                zeroline: true,
+                showline: true,
+                mirror: true
+            },
+            yaxis: {
+                title: 'Y Axis',
+                showgrid: true,
+                zeroline: true,
+                showline: true,
+                mirror: true
+            },
+            margin: {
+                l: 50,
+                r: 30,
+                b: 50,
+                t: 30,
+                pad: 4
+            },
+            plot_bgcolor: 'white',
+            paper_bgcolor: 'white'
         };
 
-        Plotly.newPlot(this.plotlyDiv, [emptyTrace], defaultLayout);
+        Plotly.newPlot(this.plotlyDiv, [], emptyLayout);
     }
 
     public update(options: VisualUpdateOptions) {
@@ -75,31 +90,62 @@ export class Visual implements IVisual {
 
         if (!xValues || !yValues || xValues.length !== yValues.length) return;
 
-        const trace = {
-            x: xValues,
-            y: yValues,
-            mode: 'markers',
+        // Clear the previous plot
+        while (this.plotlyDiv.firstChild) {
+            this.plotlyDiv.removeChild(this.plotlyDiv.firstChild);
+        }
+
+        const data = [{
+            x: Array.from(xValues),
+            y: Array.from(yValues),
             type: 'scatter',
+            mode: 'markers',
             marker: {
-                size: 8,
-                color: '#0078D4'
+                size: 50,
+                color: 'rgb(232, 14, 14)',
+                line: {
+                    color: 'rgb(231, 99, 250)',
+                    width: 1
+                }
             }
-        };
+        }];
 
         const layout = {
-            autosize: true,
-            margin: { t: 20, l: 40, r: 20, b: 40 },
+            showlegend: false,
             xaxis: {
                 title: 'X Axis',
-                automargin: true
+                showgrid: true,
+                zeroline: true,
+                showline: true,
+                mirror: true,
+                range: [Math.min(...xValues as number[]) - 1, Math.max(...xValues as number[]) + 1]
             },
             yaxis: {
                 title: 'Y Axis',
-                automargin: true
-            }
+                showgrid: true,
+                zeroline: true,
+                showline: true,
+                mirror: true,
+                range: [Math.min(...yValues as number[]) - 1, Math.max(...yValues as number[]) + 1]
+            },
+            margin: {
+                l: 50,
+                r: 30,
+                b: 50,
+                t: 30,
+                pad: 4
+            },
+            plot_bgcolor: 'white',
+            paper_bgcolor: 'white'
         };
 
-        Plotly.react(this.plotlyDiv, [trace], layout);
+        const config = {
+            displayModeBar: false,
+            responsive: true,
+            staticPlot: false
+        };
+
+        Plotly.newPlot(this.plotlyDiv, data, layout, config);
     }
 
     public destroy(): void {
