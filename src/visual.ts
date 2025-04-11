@@ -49,7 +49,7 @@ export class Visual implements IVisual {
 
         // Initialize with empty plot to ensure Plotly is working
         const emptyLayout = {
-            showlegend: false,
+            showlegend: true,
             xaxis: {
                 title: 'X Axis',
                 showgrid: true,
@@ -99,12 +99,12 @@ export class Visual implements IVisual {
             x: Array.from(xValues),
             y: Array.from(yValues),
             type: 'scatter',
-            mode: 'markers',
+            mode: 'markers+lines',
             marker: {
-                size: 50,
-                color: 'rgb(232, 14, 14)',
+                size: 10,
+                color: '#0078D4',
                 line: {
-                    color: 'rgb(231, 99, 250)',
+                    color: 'rgb(0, 0, 0)',
                     width: 1
                 }
             }
@@ -140,12 +140,12 @@ export class Visual implements IVisual {
         };
 
         const config = {
-            displayModeBar: false,
+            displayModeBar: true,
             responsive: true,
-            staticPlot: false
+            staticPlot: true
         };
 
-        Plotly.newPlot(this.plotlyDiv, data, layout, config);
+        Plotly.react(this.plotlyDiv, data, layout, config);
     }
 
     public destroy(): void {
