@@ -25,26 +25,19 @@
 */
 "use strict";
 
-import "plotly.js-dist";
+import Plotly from 'plotly.js-dist-min';
 import powerbi from "powerbi-visuals-api";
-import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import "./../style/visual.less";
 
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
 
-import { VisualFormattingSettingsModel } from "./settings";
-
 export class Visual implements IVisual {
     private target: HTMLElement;
     private plotlyDiv: HTMLElement;
-    private formattingSettings: VisualFormattingSettingsModel;
-    private formattingSettingsService: FormattingSettingsService;
 
     constructor(options: VisualConstructorOptions) {
-        console.log('Visual constructor', options);
-        this.formattingSettingsService = new FormattingSettingsService();
         this.target = options.element;
         this.plotlyDiv = document.createElement('div');
         this.plotlyDiv.style.width = '100%';
@@ -58,7 +51,8 @@ export class Visual implements IVisual {
             return;
         }
 
-        const xValues = dataView.categorical.categories.map(c => c.values[0]);
+        // Get the raw values without any aggregation
+        const xValues = dataView.categorical.categories[0].values;
         const yValues = dataView.categorical.values[0].values;
 
         const trace = {
@@ -87,20 +81,10 @@ export class Visual implements IVisual {
             }
         };
 
-        // @ts-ignore
         Plotly.newPlot(this.plotlyDiv, [trace], layout);
     }
 
     public destroy(): void {
-        // @ts-ignore
         Plotly.purge(this.plotlyDiv);
-    }
-
-    /**
-     * Returns properties pane formatting model content hierarchies, properties and latest formatting values, Then populate properties pane.
-     * This method is called once every time we open properties pane or when the user edit any format property. 
-     */
-    public getFormattingModel(): powerbi.visuals.FormattingModel {
-        return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 }

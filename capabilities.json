@@ -2,13 +2,13 @@
     "dataRoles": [
         {
             "name": "x",
-            "kind": "Measure",
+            "kind": "Grouping",
             "displayName": "X Axis",
             "description": "Values for the X axis"
         },
         {
             "name": "y",
-            "kind": "Measure",
+            "kind": "Grouping",
             "displayName": "Y Axis",
             "description": "Values for the Y axis"
         }
@@ -56,16 +56,6 @@
     },
     "dataViewMappings": [
         {
-            "conditions": [
-                {
-                    "x": {
-                        "max": 1
-                    },
-                    "y": {
-                        "max": 1
-                    }
-                }
-            ],
             "categorical": {
                 "categories": {
                     "for": {
