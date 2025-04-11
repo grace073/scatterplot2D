@@ -32,6 +32,7 @@ import "./../style/visual.less";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import IViewport = powerbi.IViewport;
 
 export class Visual implements IVisual {
     private target: HTMLElement;
@@ -39,21 +40,40 @@ export class Visual implements IVisual {
 
     constructor(options: VisualConstructorOptions) {
         this.target = options.element;
+        this.target.style.position = 'relative';
+        
         this.plotlyDiv = document.createElement('div');
         this.plotlyDiv.style.width = '100%';
         this.plotlyDiv.style.height = '100%';
         this.target.appendChild(this.plotlyDiv);
+
+        // Draw an empty plot immediately to ensure Plotly is working
+        const emptyTrace = {
+            x: [1],
+            y: [1],
+            mode: 'markers',
+            type: 'scatter'
+        };
+        
+        const defaultLayout = {
+            autosize: true,
+            margin: { t: 20, l: 40, r: 20, b: 40 }
+        };
+
+        Plotly.newPlot(this.plotlyDiv, [emptyTrace], defaultLayout);
     }
 
     public update(options: VisualUpdateOptions) {
+        if (!options.dataViews || !options.dataViews[0]) return;
+        
         const dataView = options.dataViews[0];
-        if (!dataView || !dataView.categorical) {
-            return;
-        }
+        const categorical = dataView.categorical;
+        if (!categorical || !categorical.categories || !categorical.values) return;
 
-        // Get the raw values without any aggregation
-        const xValues = dataView.categorical.categories[0].values;
-        const yValues = dataView.categorical.values[0].values;
+        const xValues = categorical.categories[0].values;
+        const yValues = categorical.values[0].values;
+
+        if (!xValues || !yValues || xValues.length !== yValues.length) return;
 
         const trace = {
             x: xValues,
@@ -61,30 +81,30 @@ export class Visual implements IVisual {
             mode: 'markers',
             type: 'scatter',
             marker: {
-                size: 10
+                size: 8,
+                color: '#0078D4'
             }
         };
 
         const layout = {
-            title: '2D Scatter Plot',
+            autosize: true,
+            margin: { t: 20, l: 40, r: 20, b: 40 },
             xaxis: {
-                title: 'X Axis'
+                title: 'X Axis',
+                automargin: true
             },
             yaxis: {
-                title: 'Y Axis'
-            },
-            margin: {
-                l: 50,
-                r: 50,
-                t: 50,
-                b: 50
+                title: 'Y Axis',
+                automargin: true
             }
         };
 
-        Plotly.newPlot(this.plotlyDiv, [trace], layout);
+        Plotly.react(this.plotlyDiv, [trace], layout);
     }
 
     public destroy(): void {
-        Plotly.purge(this.plotlyDiv);
+        if (this.plotlyDiv) {
+            Plotly.purge(this.plotlyDiv);
+        }
     }
 }
